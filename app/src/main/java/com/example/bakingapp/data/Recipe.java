@@ -3,8 +3,13 @@ package com.example.bakingapp.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.List;
 
+import androidx.annotation.Nullable;
+
+@Parcel
 public class Recipe {
 
     @SerializedName("id")
@@ -74,4 +79,14 @@ public class Recipe {
         this.image = image;
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+
+        if(!(obj instanceof Recipe))
+            return super.equals(obj);
+
+        Recipe other = (Recipe) obj;
+
+        return this.getId() == other.getId() && this.image.equals(other.getImage()) && this.getName().equals(other.getName());
+    }
 }

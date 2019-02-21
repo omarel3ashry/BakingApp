@@ -6,12 +6,16 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.bakingapp.R;
 import com.example.bakingapp.data.Recipe;
 import com.example.bakingapp.databinding.ActivityMainBinding;
+import com.example.bakingapp.ui.recipe.RecipeActivity;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -46,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
         recipesAdapter.setRecipeClickListener(new RecipesAdapter.RecipeClickListener() {
             @Override
             public void onClick(Recipe recipe) {
-
+                Intent intent = new Intent(MainActivity.this, RecipeActivity.class);
+                intent.putExtra(RecipeActivity.RECIPE_EXTRA, Parcels.wrap(recipe));
+                startActivity(intent);
             }
         });
     }

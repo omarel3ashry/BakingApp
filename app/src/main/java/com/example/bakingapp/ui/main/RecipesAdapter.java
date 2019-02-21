@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class RecipesAdapter extends ListAdapter<Recipe, RecipesAdapter.RecipeViewHolder> {
 
-
     private RecipeClickListener recipeClickListener;
 
     protected RecipesAdapter() {
@@ -45,7 +44,7 @@ public class RecipesAdapter extends ListAdapter<Recipe, RecipesAdapter.RecipeVie
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(recipeClickListener != null){
+                    if (recipeClickListener != null) {
                         recipeClickListener.onClick(getItem(getAdapterPosition()));
                     }
                 }
@@ -71,7 +70,7 @@ public class RecipesAdapter extends ListAdapter<Recipe, RecipesAdapter.RecipeVie
 
         @Override
         public boolean areContentsTheSame(@NonNull Recipe oldItem, @NonNull Recipe newItem) {
-            return oldItem.getId() == newItem.getId();
+            return oldItem.equals(newItem);
         }
     };
 
