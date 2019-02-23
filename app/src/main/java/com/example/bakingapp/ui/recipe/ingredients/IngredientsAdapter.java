@@ -22,7 +22,8 @@ public class IngredientsAdapter extends ListAdapter<Ingredient, IngredientsAdapt
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        IngredientListItemBinding binding = IngredientListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        IngredientListItemBinding binding = IngredientListItemBinding.inflate
+                (LayoutInflater.from(parent.getContext()), parent, false);
         return new ItemViewHolder(binding);
     }
 

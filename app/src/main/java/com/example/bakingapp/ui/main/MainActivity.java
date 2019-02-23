@@ -1,14 +1,7 @@
 package com.example.bakingapp.ui.main;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.bakingapp.R;
 import com.example.bakingapp.data.Recipe;
@@ -18,6 +11,12 @@ import com.example.bakingapp.ui.recipe.RecipeActivity;
 import org.parceler.Parcels;
 
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupRecyclerView(){
+    private void setupRecyclerView() {
         binding.recipesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recipesRecyclerView.setAdapter(recipesAdapter);
 

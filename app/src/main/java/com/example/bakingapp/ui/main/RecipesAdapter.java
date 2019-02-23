@@ -10,7 +10,6 @@ import com.example.bakingapp.databinding.RecipeListItemBinding;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +25,8 @@ public class RecipesAdapter extends ListAdapter<Recipe, RecipesAdapter.RecipeVie
     @NonNull
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        RecipeListItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.recipe_list_item, parent, false);
+        RecipeListItemBinding binding = DataBindingUtil.inflate
+                (LayoutInflater.from(parent.getContext()), R.layout.recipe_list_item, parent, false);
         return new RecipeViewHolder(binding.getRoot(), binding);
     }
 

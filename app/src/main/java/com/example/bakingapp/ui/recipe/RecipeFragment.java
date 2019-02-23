@@ -3,23 +3,24 @@ package com.example.bakingapp.ui.recipe;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.bakingapp.R;
 import com.example.bakingapp.data.Recipe;
+import com.example.bakingapp.data.Step;
 import com.example.bakingapp.databinding.FragmentRecipeBinding;
 import com.example.bakingapp.ui.recipe.ingredients.IngredientsActivity;
+import com.example.bakingapp.ui.recipe.step.StepDetailsActivity;
+import com.example.bakingapp.ui.recipe.step.StepDetailsFragment;
 
 import org.parceler.Parcels;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,7 +30,6 @@ public class RecipeFragment extends Fragment {
     private Recipe recipe;
     private FragmentRecipeBinding binding;
     private StepsAdapter stepsAdapter;
-
 
     public RecipeFragment() {
         // Required empty public constructor
@@ -74,7 +74,28 @@ public class RecipeFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        stepsAdapter.submitList(recipe.getSteps());
+        if (RecipeActivity.mTwoPane) {
+            stepsAdapter.setStepClickListener(new StepsAdapter.StepClickListener() {
+                @Override
+                public void onClick(Step step) {
+                    StepDetailsFragment stepDetailsFragment = StepDetailsFragment.newInstance(step);
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.stepDetailsContainer, stepDetailsFragment).commit();
+                }
+            });
+        } else {
+            stepsAdapter.setStepClickListener(new StepsAdapter.StepClickListener() {
+                @Override
+                public void onClick(Step step) {
+                    Intent intent = new Intent(getContext(), StepDetailsActivity.class);
+                    intent.putExtra(StepDetailsActivity.STEP_EXTRA, Parcels.wrap(step));
+                    startActivity(intent);
+                }
+            });
+        }
 
-//        stepsAdapter.submitList(recipe.getSteps());
+
     }
+
 }

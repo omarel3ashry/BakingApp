@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class StepsAdapter extends ListAdapter<Step, StepsAdapter.StepViewHolder> {
 
+    private StepClickListener stepClickListener;
 
     protected StepsAdapter() {
         super(diffCallback);
@@ -24,7 +25,8 @@ public class StepsAdapter extends ListAdapter<Step, StepsAdapter.StepViewHolder>
     @NonNull
     @Override
     public StepViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        StepListItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.step_list_item, parent, false);
+        StepListItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from
+                (parent.getContext()), R.layout.step_list_item, parent, false);
         return new StepViewHolder(binding.getRoot(), binding);
     }
 
@@ -39,6 +41,14 @@ public class StepsAdapter extends ListAdapter<Step, StepsAdapter.StepViewHolder>
         StepViewHolder(@NonNull View itemView, StepListItemBinding binding) {
             super(itemView);
             this.binding = binding;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (stepClickListener != null) {
+                        stepClickListener.onClick(getItem(getAdapterPosition()));
+                    }
+                }
+            });
         }
 
         void bind(Step step) {
@@ -58,4 +68,12 @@ public class StepsAdapter extends ListAdapter<Step, StepsAdapter.StepViewHolder>
             return oldItem.getId() == newItem.getId();
         }
     };
+
+    public void setStepClickListener(StepClickListener stepClickListener) {
+        this.stepClickListener = stepClickListener;
+    }
+
+    public interface StepClickListener {
+        void onClick(Step step);
+    }
 }
