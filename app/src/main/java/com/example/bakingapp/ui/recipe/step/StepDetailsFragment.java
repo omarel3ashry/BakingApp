@@ -1,23 +1,35 @@
 package com.example.bakingapp.ui.recipe.step;
 
 
+import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.bakingapp.R;
-import com.example.bakingapp.data.Recipe;
 import com.example.bakingapp.data.Step;
 import com.example.bakingapp.databinding.FragmentStepDetailsBinding;
-import com.example.bakingapp.ui.recipe.RecipeFragment;
+import com.example.bakingapp.ui.recipe.RecipeActivity;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
+
+import java.net.URLConnection;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +38,10 @@ public class StepDetailsFragment extends Fragment {
 
     private Step step;
     private FragmentStepDetailsBinding binding;
+    private SimpleExoPlayer exoPlayer;
+    private String mVideoUrl;
+    private String mThumbnailUrl;
+    private boolean viewVideo;
 
     public StepDetailsFragment() {
         // Required empty public constructor
@@ -42,11 +58,58 @@ public class StepDetailsFragment extends Fragment {
     }
 
     @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (!RecipeActivity.mTwoPane) {
+            if (viewVideo) {
+                if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    binding.exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+                    binding.stepTextView.setVisibility(View.GONE);
+                } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    binding.exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+                    binding.stepTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         step = Parcels.unwrap(getArguments().getParcelable("step"));
+        assert step != null;
+        mVideoUrl = step.getVideoURL();
+        mThumbnailUrl = step.getThumbnailURL();
+        if (mVideoUrl != null && !mVideoUrl.isEmpty()) {
+            viewVideo = true;
+            mVideoUrl = step.getVideoURL();
+        } else viewVideo = false;
+        if (mThumbnailUrl != null && !mThumbnailUrl.isEmpty() && showThumbnail(mThumbnailUrl)) {
+            Picasso.get().load(Uri.parse(mThumbnailUrl)).into(binding.thumbnailImg);
+            binding.thumbnailImg.setVisibility(View.VISIBLE);
+        }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (viewVideo)
+            initializePlayer(Uri.parse(mVideoUrl));
+        else binding.exoPlayerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        releasePlayer();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,4 +124,29 @@ public class StepDetailsFragment extends Fragment {
         binding.stepTextView.setText(step.getDescription());
         binding.executePendingBindings();
     }
+
+    private void initializePlayer(Uri uri) {
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), new DefaultTrackSelector());
+        binding.exoPlayerView.setPlayer(exoPlayer);
+        exoPlayer.setPlayWhenReady(true);
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory
+                (getContext(), Util.getUserAgent(getContext(), "BakingApp"));
+        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        exoPlayer.prepare(videoSource);
+
+    }
+
+    private void releasePlayer() {
+        if (exoPlayer != null) {
+            exoPlayer.release();
+            exoPlayer = null;
+        }
+    }
+
+    private boolean showThumbnail(String s) {
+        String fileType = URLConnection.guessContentTypeFromName(s);
+        return fileType != null && fileType.startsWith("image");
+    }
+
+
 }

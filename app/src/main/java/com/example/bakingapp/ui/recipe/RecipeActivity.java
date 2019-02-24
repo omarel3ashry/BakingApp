@@ -1,11 +1,17 @@
 package com.example.bakingapp.ui.recipe;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.RemoteViews;
 
 import com.example.bakingapp.R;
 import com.example.bakingapp.data.Recipe;
 import com.example.bakingapp.data.Step;
 import com.example.bakingapp.ui.recipe.step.StepDetailsFragment;
+import com.example.bakingapp.widget.BakingProviderWidget;
 
 import org.parceler.Parcels;
 
@@ -17,7 +23,8 @@ public class RecipeActivity extends AppCompatActivity {
     public static final String RECIPE_EXTRA = "recipe";
     private Recipe recipe;
     public static boolean mTwoPane;
-    public static boolean stepAdded = false;
+    public static boolean stepAdded;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +35,10 @@ public class RecipeActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         RecipeFragment recipeFragment = RecipeFragment.newInstance(recipe);
         fragmentManager.beginTransaction().add(R.id.recipeContainer, recipeFragment).commit();
+        if (savedInstanceState == null) {
+            refreshWidgetList(recipe);
+            saveRecipe(recipe);
+        }
 
         if (findViewById(R.id.twoPane) != null) {
             StepDetailsFragment stepDetailsFragment;
@@ -43,6 +54,29 @@ public class RecipeActivity extends AppCompatActivity {
             mTwoPane = false;
         }
 
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stepAdded = false;
+    }
+
+    private void refreshWidgetList(Recipe recipe) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplication());
+        int ids[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(getApplication(), BakingProviderWidget.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_grid_view);
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.baking_provider_widget);
+        remoteViews.setTextViewText(R.id.widgetRecipeName, recipe.getName());
+        appWidgetManager.partiallyUpdateAppWidget(ids, remoteViews);
+    }
+
+    private void saveRecipe(Recipe recipe) {
+        SharedPreferences sharedpreferences = getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(getString(R.string.widget_recipe), recipe.getName());
+        editor.putLong(getString(R.string.recipe_id), recipe.getId());
+        editor.apply();
     }
 }
