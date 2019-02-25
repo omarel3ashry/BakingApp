@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.bakingapp.R;
@@ -24,7 +25,6 @@ public class RecipeActivity extends AppCompatActivity {
     private Recipe recipe;
     public static boolean mTwoPane;
     public static boolean stepAdded;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class RecipeActivity extends AppCompatActivity {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplication());
         int ids[] = appWidgetManager.getAppWidgetIds(
                 new ComponentName(getApplication(), BakingProviderWidget.class));
-        appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_grid_view);
+        appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_list_view);
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.baking_provider_widget);
         remoteViews.setTextViewText(R.id.widgetRecipeName, recipe.getName());
         appWidgetManager.partiallyUpdateAppWidget(ids, remoteViews);
@@ -76,7 +76,8 @@ public class RecipeActivity extends AppCompatActivity {
         SharedPreferences sharedpreferences = getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString(getString(R.string.widget_recipe), recipe.getName());
-        editor.putLong(getString(R.string.recipe_id), recipe.getId());
+        editor.putInt(getString(R.string.recipe_id), recipe.getId());
         editor.apply();
+
     }
 }

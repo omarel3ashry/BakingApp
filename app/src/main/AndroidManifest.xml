@@ -13,15 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <receiver android:name=".widget.BakingProviderWidget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/baking_provider_widget_info" />
-        </receiver>
 
         <activity
             android:name=".ui.main.MainActivity"
@@ -56,7 +47,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.recipe.RecipeActivity" />
         </activity>
+        <receiver android:name=".widget.BakingProviderWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
 
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/baking_provider_widget_info" />
+        </receiver>
         <service
             android:name=".widget.IngredientsRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

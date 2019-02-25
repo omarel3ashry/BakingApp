@@ -17,14 +17,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <GridView
-            android:id="@+id/widget_grid_view"
+        <ListView
+            android:id="@+id/widget_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            android:columnWidth="25dp"
             android:horizontalSpacing="5dp"
-            android:numColumns="1"
             android:verticalSpacing="5dp" />
     </FrameLayout>
 

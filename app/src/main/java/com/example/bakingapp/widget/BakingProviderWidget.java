@@ -27,13 +27,13 @@ public class BakingProviderWidget extends AppWidgetProvider {
         Intent intent = new Intent(context, IngredientsRemoteViewsService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-        remoteViews.setRemoteAdapter(R.id.widget_grid_view, intent);
-        remoteViews.setEmptyView(R.id.widget_grid_view, R.id.emptyView);
+        remoteViews.setRemoteAdapter(R.id.widget_list_view, intent);
+        remoteViews.setEmptyView(R.id.widget_list_view, R.id.emptyView);
         SharedPreferences prefs = context.getSharedPreferences("pref", MODE_PRIVATE);
         String recipeName = prefs.getString(context.getString(R.string.widget_recipe), "No recipe to view");
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_grid_view);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list_view);
         remoteViews.setTextViewText(R.id.widgetRecipeName, recipeName);
-        remoteViews.setRemoteAdapter(R.id.widget_grid_view, intent);
+        remoteViews.setRemoteAdapter(R.id.widget_list_view, intent);
 
 
         // Instruct the widget manager to update the widget

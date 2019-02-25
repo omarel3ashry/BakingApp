@@ -12,6 +12,7 @@ import com.example.bakingapp.data.Ingredient;
 import com.example.bakingapp.data.Recipe;
 import com.example.bakingapp.data.rest.RetrofitClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -31,6 +32,7 @@ class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
     private Context mContext;
     private List<Ingredient> mIngredientsList;
     private List<Recipe> mRecipeList;
+    private Recipe recipe;
 
 
     IngredientsRemoteViewsFactory(Context context) {
@@ -44,13 +46,16 @@ class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public void onDataSetChanged() {
-
+        mRecipeList = new ArrayList<>();
+        SharedPreferences prefs = mContext.getSharedPreferences("pref", MODE_PRIVATE);
+        final int recipeId = prefs.getInt(mContext.getString(R.string.recipe_id), 1);
         RetrofitClient.getRecipesService().getRecipes().enqueue(new Callback<List<Recipe>>() {
-
             @Override
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 if (response.isSuccessful()) {
                     mRecipeList = response.body();
+                    List<Ingredient> ingredients = mRecipeList.get(recipeId).getIngredients();
+                    mIngredientsList.addAll(ingredients);
                 }
             }
 
@@ -59,10 +64,9 @@ class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
                 Log.e("JSONFAIL", t.getMessage(), t);
             }
         });
-        SharedPreferences prefs = mContext.getSharedPreferences("pref", MODE_PRIVATE);
-        String recipeId = prefs.getString(mContext.getString(R.string.recipe_id), "1");
-        mIngredientsList = mRecipeList.get(Integer.parseInt(recipeId)).getIngredients();
 
+//        List<Ingredient> ingredients = mRecipeList.get(recipeId).getIngredients();
+//        mIngredientsList.addAll(ingredients);
     }
 
     @Override
@@ -72,14 +76,17 @@ class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public int getCount() {
-        return mIngredientsList.size();
+        if (mIngredientsList == null || mIngredientsList.isEmpty())
+            return 0;
+        else
+            return mIngredientsList.size();
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
         RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
         Ingredient ingredient = mIngredientsList.get(position);
-        remoteViews.setTextViewText(R.id.grid_view_text_item,
+        remoteViews.setTextViewText(R.id.list_view_text_item,
                 ingredient.getQuantity() + " " + ingredient.getMeasure() + " " + ingredient.getIngredient());
         return remoteViews;
     }
