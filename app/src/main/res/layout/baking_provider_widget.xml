@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:textStyle="bold"
         tools:text="RECIPE NAME" />
 
     <FrameLayout
@@ -22,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
+            android:background="#09C"
             android:horizontalSpacing="5dp"
             android:verticalSpacing="5dp" />
     </FrameLayout>

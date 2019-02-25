@@ -8,4 +8,5 @@
     <string name="widget_recipe">Recipe</string>
     <string name="recipe_id">Id</string>
     <string name="empty">No Ingredients to show!</string>
+    <string name="recipe_string">recipe</string>
 </resources>

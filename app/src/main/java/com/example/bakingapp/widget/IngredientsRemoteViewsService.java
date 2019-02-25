@@ -1,29 +1,32 @@
 package com.example.bakingapp.widget;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.example.bakingapp.Prefs;
 import com.example.bakingapp.R;
 import com.example.bakingapp.data.Ingredient;
 import com.example.bakingapp.data.Recipe;
-import com.example.bakingapp.data.rest.RetrofitClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static android.content.Context.MODE_PRIVATE;
-
 public class IngredientsRemoteViewsService extends RemoteViewsService {
+
+    public static void updateWidget(Context context, Recipe recipe) {
+        Prefs.saveRecipe(context, recipe);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, BakingProviderWidget.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
+        BakingProviderWidget.updateAppWidgets(context, appWidgetManager, appWidgetIds);
+    }
+
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
+        intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         return new IngredientsRemoteViewsFactory(getApplicationContext());
     }
 }
@@ -31,7 +34,6 @@ public class IngredientsRemoteViewsService extends RemoteViewsService {
 class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context mContext;
     private List<Ingredient> mIngredientsList;
-    private List<Recipe> mRecipeList;
     private Recipe recipe;
 
 
@@ -46,27 +48,8 @@ class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public void onDataSetChanged() {
-        mRecipeList = new ArrayList<>();
-        SharedPreferences prefs = mContext.getSharedPreferences("pref", MODE_PRIVATE);
-        final int recipeId = prefs.getInt(mContext.getString(R.string.recipe_id), 1);
-        RetrofitClient.getRecipesService().getRecipes().enqueue(new Callback<List<Recipe>>() {
-            @Override
-            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                if (response.isSuccessful()) {
-                    mRecipeList = response.body();
-                    List<Ingredient> ingredients = mRecipeList.get(recipeId).getIngredients();
-                    mIngredientsList.addAll(ingredients);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                Log.e("JSONFAIL", t.getMessage(), t);
-            }
-        });
-
-//        List<Ingredient> ingredients = mRecipeList.get(recipeId).getIngredients();
-//        mIngredientsList.addAll(ingredients);
+        recipe = Prefs.loadRecipe(mContext);
+        mIngredientsList = recipe.getIngredients();
     }
 
     @Override
