@@ -31,9 +31,24 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.code.gson:gson:2.8.5'
 
+    // Testing
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.2-alpha01'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation('androidx.test:runner:1.1.1') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:3.0.1') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+    }
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.1.1'
 
     def lifecycle_version = "2.0.0"
     // ViewModel and LiveData
